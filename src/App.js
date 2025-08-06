@@ -1,3 +1,4 @@
+// App.js
 import React, { useState, useEffect } from "react";
 import axios from "axios";
 import {
@@ -8,99 +9,64 @@ import {
 } from "react-router-dom";
 
 ////////////////////////////////////////////////////////////////////////////////
-//                                 STYLES                                    //
+//                                  CONSTANTS                                 //
+////////////////////////////////////////////////////////////////////////////////
+
+// Arlington Heights, IL coords
+const LAT = 41.9759;
+const LON = -87.9291;
+const POINTS_URL = `https://api.weather.gov/points/${LAT},${LON}`;
+
+////////////////////////////////////////////////////////////////////////////////
+//                                  STYLES                                    //
 ////////////////////////////////////////////////////////////////////////////////
 
 const headerStyle = {
-  width: "100vw",
-  left: "50%",
-  marginLeft: "-50vw",
-  position: "relative",
-  backgroundColor: "#F26724",
-  color: "white",
-  padding: "32px 0",
-  textAlign: "center",
-  fontSize: "2.5rem",
-  fontWeight: "bold",
-  letterSpacing: "2px",
-  marginBottom: 0,
-  borderRadius: "0 0 16px 16px",
-  boxShadow: "0 4px 12px rgba(0,0,0,0.12)",
-  zIndex: 1
+  position: "relative", width: "100vw", left: "50%", marginLeft: "-50vw",
+  backgroundColor: "#F26724", color: "white", padding: "32px 0",
+  textAlign: "center", fontSize: "2.5rem", fontWeight: "bold",
+  letterSpacing: "2px", borderRadius: "0 0 16px 16px",
+  boxShadow: "0 4px 12px rgba(0,0,0,0.12)", zIndex: 1
 };
 
 const homeButtonStyle = {
-  position: "absolute",
-  top: "16px",
-  left: "16px",
-  background: "transparent",
-  border: "none",
-  color: "white",
-  fontSize: "1.6rem",
-  cursor: "pointer",
-  zIndex: 2
+  position: "absolute", top: "16px", left: "16px",
+  background: "transparent", border: "none", color: "white",
+  fontSize: "1.6rem", cursor: "pointer", zIndex: 2
 };
 
 const menuButtonStyle = {
-  position: "absolute",
-  top: "16px",
-  left: "48px",
-  background: "transparent",
-  border: "none",
-  color: "white",
-  fontSize: "1.8rem",
-  cursor: "pointer",
-  zIndex: 2
+  position: "absolute", top: "16px", left: "48px",
+  background: "transparent", border: "none", color: "white",
+  fontSize: "1.8rem", cursor: "pointer", zIndex: 2
 };
 
 const menuStyle = {
-  position: "absolute",
-  top: "100%",
-  left: 0,
-  backgroundColor: "#fff",
-  width: "200px",
+  position: "absolute", top: "100%", left: 0,
+  backgroundColor: "#fff", width: "200px",
   boxShadow: "0 4px 12px rgba(0,0,0,0.1)",
-  borderRadius: "0 0 8px 8px",
-  overflow: "hidden"
+  borderRadius: "0 0 8px 8px", overflow: "hidden"
 };
 
 const menuItemStyle = {
-  display: "block",
-  width: "100%",
-  padding: "8px 12px",
-  fontSize: "0.9rem",
-  lineHeight: 1.2,
-  color: "#000",
-  background: "white",
-  border: "none",
-  textAlign: "left",
+  display: "block", width: "100%", padding: "8px 12px",
+  fontSize: "0.9rem", lineHeight: 1.2, color: "#000",
+  background: "white", border: "none", textAlign: "left",
   cursor: "pointer"
 };
 
 const tickerContainerStyle = {
-  width: "100vw",
-  left: "50%",
-  marginLeft: "-50vw",
-  overflow: "hidden",
-  background: "#8B4513",
-  color: "white",
-  borderBottomLeftRadius: "12px",
-  borderBottomRightRadius: "12px",
-  marginBottom: "32px",
-  position: "relative",
-  height: "40px",
-  display: "flex",
-  alignItems: "center"
+  position: "relative", width: "100vw", left: "50%",
+  marginLeft: "-50vw", overflow: "hidden", background: "#8B4513",
+  color: "white", borderBottomLeftRadius: "12px",
+  borderBottomRightRadius: "12px", height: "40px",
+  display: "flex", alignItems: "center", marginBottom: "32px"
 };
 
 const tickerTextStyle = {
-  display: "inline-block",
-  whiteSpace: "nowrap",
-  fontWeight: 500,
-  fontSize: "1.1rem",
-  letterSpacing: "1px",
-  paddingLeft: "100vw",
-  animation: "ticker-scroll 18s linear infinite"
+  display: "inline-block", whiteSpace: "nowrap",
+  fontWeight: 500, fontSize: "1.1rem", letterSpacing: "1px",
+  paddingLeft: "100vw", animation: "ticker-scroll 18s linear infinite"
 };
 
 const keyframes = `
@@ -111,22 +77,36 @@ const keyframes = `
 `;
 
 const pageContainerStyle = {
-  maxWidth: 600,
-  margin: "auto",
-  padding: 20,
-  background: "#f0f0f0",
-  minHeight: "100vh"
+  maxWidth: 600, margin: "auto", padding: 20,
+  background: "#f0f0f0", minHeight: "100vh", position: "relative"
 };
 
-const satelliteSectionStyle = {
-  border: "2px solid #F26724",
-  borderRadius: "8px",
-  padding: "10px",
-  marginBottom: "32px"
+const sectionStyle = {
+  border: "2px solid #F26724", borderRadius: "8px",
+  padding: "16px", marginBottom: "32px", background: "#fff"
+};
+
+const miniStyle = {
+  position: "absolute", top: "16px", right: "16px",
+  background: "rgba(255,255,255,0.9)", padding: "8px 12px",
+  borderRadius: "8px", boxShadow: "0 2px 6px rgba(0,0,0,0.15)",
+  cursor: "pointer", display: "flex", flexDirection: "column",
+  alignItems: "center", zIndex: 3
+};
+
+const forecastGridStyle = {
+  display: "flex", justifyContent: "space-between",
+  flexWrap: "wrap", gap: "12px"
+};
+
+const cardStyle = {
+  flex: "1 1 100px", background: "#e0f7fa",
+  padding: "12px", borderRadius: "8px", textAlign: "center",
+  boxShadow: "0 2px 6px rgba(0,0,0,0.1)"
 };
 
 ////////////////////////////////////////////////////////////////////////////////
-//                             SAMPLE DATA                                   //
+//                                SAMPLE DATA                                 //
 ////////////////////////////////////////////////////////////////////////////////
 
 const updates = [
@@ -141,49 +121,19 @@ const updates = [
 function Header() {
   const [menuOpen, setMenuOpen] = useState(false);
   const navigate = useNavigate();
-
-  const goTo = (path) => {
-    navigate(path);
-    setMenuOpen(false);
-  };
+  const goTo = path => { navigate(path); setMenuOpen(false); };
 
   return (
     <header style={headerStyle}>
-      <button
-        style={homeButtonStyle}
-        aria-label="Home"
-        onClick={() => goTo("/")}
-      >
-        🏠
-      </button>
-
-      <button
-        style={menuButtonStyle}
-        aria-label="Toggle menu"
-        onClick={() => setMenuOpen(o => !o)}
-      >
-        ☰
-      </button>
-
+      <button style={homeButtonStyle} onClick={() => goTo("/")}>🏠</button>
+      <button style={menuButtonStyle} onClick={() => setMenuOpen(o => !o)}>☰</button>
       Hersey Meteorology Club
-
       {menuOpen && (
         <nav style={menuStyle}>
-          <button style={menuItemStyle} onClick={() => goTo("/about")}>
-            About
-          </button>
-          <button style={menuItemStyle} onClick={() => goTo("/updates")}>
-            Meeting Updates
-          </button>
-          <button style={menuItemStyle} onClick={() => goTo("/schedule")}>
-            Schedule
-          </button>
-          <button
-            style={{ ...menuItemStyle, borderBottom: "none" }}
-            onClick={() => goTo("/contact")}
-          >
-            Contact Information
-          </button>
+          <button style={menuItemStyle} onClick={() => goTo("/about")}>About</button>
+          <button style={menuItemStyle} onClick={() => goTo("/updates")}>Meeting Updates</button>
+          <button style={menuItemStyle} onClick={() => goTo("/schedule")}>Schedule</button>
+          <button style={{ ...menuItemStyle, borderBottom: "none" }} onClick={() => goTo("/contact")}>Contact Information</button>
         </nav>
       )}
     </header>
@@ -201,77 +151,77 @@ function MeetingTicker() {
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-//                          FEATURE COMPONENTS                              //
+//                         MINI WEATHER WIDGET                                //
 ////////////////////////////////////////////////////////////////////////////////
 
-function WeatherWidget() {
-  const [weather, setWeather] = useState(null);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
-
-  const cityId = "4889284";
-  const apiKey = "45a3169127ee4112afb9beab62d91491"; 
+function MiniWeatherWidget() {
+  const [now, setNow]       = useState(null);
+  const [loading, setLoad]  = useState(true);
+  const [error, setError]   = useState(null);
+  const navigate            = useNavigate();
 
   useEffect(() => {
-    axios
-      .get("https://api.openweathermap.org/data/2.5/weather", {
-        params: { id: cityId, units: "imperial", appid: apiKey }
-      })
-      .then(resp => {
-        setWeather(resp.data);
-        setLoading(false);
-      })
-      .catch(() => {
-        setError("Could not fetch weather data.");
-        setLoading(false);
-      });
+    let mounted = true;
+    let intervalId;
+
+    async function fetchNow() {
+      try {
+        const pt = await axios.get(POINTS_URL);
+        const hr = await axios.get(pt.data.properties.forecastHourly);
+        if (!mounted) return;
+        setNow(hr.data.properties.periods[0]);
+        setError(null);
+      } catch (e) {
+        if (!mounted) return;
+        setError(e.message);
+      } finally {
+        if (!mounted) return;
+        setLoad(false);
+      }
+    }
+
+    fetchNow();
+    intervalId = setInterval(fetchNow, 300000);
+    return () => { mounted = false; clearInterval(intervalId); };
   }, []);
 
-  if (loading) return (
-    <section>
-      <h2>Current Weather</h2>
-      <p>Loading...</p>
-    </section>
-  );
-  if (error) return (
-    <section>
-      <h2>Current Weather</h2>
-      <p>{error}</p>
-    </section>
-  );
+  if (loading || error || !now) return null;
 
   return (
-    <section>
-      <h2>Current Weather</h2>
-      <p>
-        {weather.name}: {weather.weather[0].description}
-        <br />
-        Temp: {weather.main.temp}°F, Feels like: {weather.main.feels_like}°F
-        <br />
-        Humidity: {weather.main.humidity}%
-      </p>
-      <img
-        src={`https://openweathermap.org/img/wn/${weather.weather[0].icon}@2x.png`}
-        alt={weather.weather[0].description}
-      />
-    </section>
+    <div style={miniStyle} onClick={() => navigate("/forecast")}>
+      <div style={{ fontSize: "1.4rem" }}>{now.shortForecast}</div>
+      <div style={{ fontWeight: "bold", fontSize: "1.3rem" }}>
+        {Math.round(now.temperature)}°F
+      </div>
+      <div style={{ fontSize: "0.8rem", opacity: 0.7 }}>
+        at {new Date(now.startTime).toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })}
+      </div>
+    </div>
   );
 }
 
-function GoesSatellite() {
-  const [imgSrc, setImgSrc] = useState(getUrl());
+////////////////////////////////////////////////////////////////////////////////
+//                            SATELLITE COMPONENT                             //
+////////////////////////////////////////////////////////////////////////////////
 
-  function getUrl() {
-    return `https://cdn.star.nesdis.noaa.gov/GOES16/ABI/SECTOR/umv/GEOCOLOR/latest.jpg?cacheBust=${Date.now()}`;
-  }
+function GoesSatellite() {
+  const [imgSrc, setImgSrc] = useState(
+    "https://cdn.star.nesdis.noaa.gov/GOES16/ABI/SECTOR/umv/GEOCOLOR/latest.jpg" +
+    `?cacheBust=${Date.now()}`
+  );
 
   useEffect(() => {
-    const id = setInterval(() => setImgSrc(getUrl()), 300_000);
+    const id = setInterval(() => {
+      setImgSrc(
+        "https://cdn.star.nesdis.noaa.gov/GOES16/ABI/SECTOR/umv/GEOCOLOR/latest.jpg" +
+        `?cacheBust=${Date.now()}`
+      );
+    }, 300000);
     return () => clearInterval(id);
   }, []);
 
   return (
-    <section style={satelliteSectionStyle}>
+    <section style={sectionStyle}>
       <h2>Current Satellite Imagery</h2>
       <img
         src={imgSrc}
@@ -284,7 +234,7 @@ function GoesSatellite() {
           target="_blank"
           rel="noopener noreferrer"
         >
-          View live and animated images
+          View live & animated images
         </a>
       </div>
     </section>
@@ -292,13 +242,79 @@ function GoesSatellite() {
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-//                           PAGE COMPONENTS                                  //
+//                            FORECAST PAGE                                  //
+////////////////////////////////////////////////////////////////////////////////
+
+function ForecastPage() {
+  const [days, setDays]     = useState([]);
+  const [loading, setLoad]  = useState(true);
+  const [error, setError]   = useState(null);
+
+  useEffect(() => {
+    let mounted = true;
+    async function fetchForecast() {
+      try {
+        const pt = await axios.get(POINTS_URL);
+        const fc = await axios.get(pt.data.properties.forecast);
+        if (!mounted) return;
+        const dias = fc.data.properties.periods
+          .filter(p => p.isDaytime)
+          .slice(1, 6);
+        setDays(dias);
+        setError(null);
+      } catch (e) {
+        if (!mounted) return;
+        setError(e.message);
+      } finally {
+        if (!mounted) return;
+        setLoad(false);
+      }
+    }
+    fetchForecast();
+    return () => { mounted = false; };
+  }, []);
+
+  if (loading) return (
+    <section style={sectionStyle}>
+      <h2>5-Day Forecast</h2>
+      <p>Loading…</p>
+    </section>
+  );
+
+  if (error) return (
+    <section style={sectionStyle}>
+      <h2>5-Day Forecast</h2>
+      <p>Failed to load: {error}</p>
+    </section>
+  );
+
+  return (
+    <section style={sectionStyle}>
+      <h2>5-Day Forecast</h2>
+      <div style={forecastGridStyle}>
+        {days.map((d, i) => (
+          <div key={i} style={cardStyle}>
+            <div style={{ fontWeight: "bold" }}>
+              {new Date(d.startTime).toLocaleDateString(undefined, {
+                weekday: "short", month: "short", day: "numeric"
+              })}
+            </div>
+            <div style={{ margin: "8px 0" }}>{d.shortForecast}</div>
+            <div>High {Math.round(d.temperature)}°F</div>
+          </div>
+        ))}
+      </div>
+    </section>
+  );
+}
+
+////////////////////////////////////////////////////////////////////////////////
+//                           OTHER PAGES                                     //
 ////////////////////////////////////////////////////////////////////////////////
 
 function HomePage() {
   return (
     <>
-      <WeatherWidget />
       <GoesSatellite />
     </>
   );
@@ -306,7 +322,7 @@ function HomePage() {
 
 function AboutPage() {
   return (
-    <section>
+    <section style={sectionStyle}>
       <h2>About</h2>
       <p>This club is dedicated to exploring meteorology and atmospheric sciences.</p>
     </section>
@@ -315,13 +331,11 @@ function AboutPage() {
 
 function UpdatesPage() {
   return (
-    <section>
+    <section style={sectionStyle}>
       <h2>Meeting Updates</h2>
       <ul>
-        {updates.map((u, i) => (
-          <li key={i}>
-            <strong>{u.date}:</strong> {u.text}
-          </li>
+        {updates.map((u,i) => (
+          <li key={i}><strong>{u.date}:</strong> {u.text}</li>
         ))}
       </ul>
     </section>
@@ -330,21 +344,18 @@ function UpdatesPage() {
 
 function SchedulePage() {
   return (
-    <section>
+    <section style={sectionStyle}>
       <h2>Schedule</h2>
-      <p>Our weekly meetings are every Thursday at 3:30pm in Room 101.</p>
+      <p>Weekly meetings: Thursdays at 3:30 PM, Room 101.</p>
     </section>
   );
 }
 
 function ContactPage() {
   return (
-    <section>
+    <section style={sectionStyle}>
       <h2>Contact Information</h2>
-      <p>
-        Email: info@herseymeteorology.org<br />
-        Phone: (555) 123-4567
-      </p>
+      <p>Email: info@herseymeteorology.org<br/>Phone: (555) 123-4567</p>
     </section>
   );
 }
@@ -358,9 +369,11 @@ function App() {
     <Router>
       <Header />
       <MeetingTicker />
+      <MiniWeatherWidget />
       <div style={pageContainerStyle}>
         <Routes>
           <Route path="/" element={<HomePage />} />
+          <Route path="/forecast" element={<ForecastPage />} />
           <Route path="/about" element={<AboutPage />} />
           <Route path="/updates" element={<UpdatesPage />} />
           <Route path="/schedule" element={<SchedulePage />} />
